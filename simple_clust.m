@@ -230,7 +230,7 @@ while run
             [FileName,PathName,FilterIndex] = uigetfile({'*.wf;*.nse;*.nst;*.ntt;*.spikes;','all base electrode file types';...
                 '*_simpleclust.mat', 'simpleclust file';'*.spikes', 'open ephys file';'*.mat', 'matlab file';...
                 '*_extracted.mat', 'extracted matlab file';'*.wf','Waveform file';'*.nse' ,'neuralynx single electrode file';...
-                '*.nst',  'neuralynx stereotrode file'; '*.ntt',  'neuralynx tetrode file'},['choose files to process'],'MultiSelect','on');
+                '*.nst',  'neuralynx stereotrode file'; '*.ntt',  'neuralynx tetrode file'; '*.kwx',  'openephys kwx file'},['choose files to process'],'MultiSelect','on');
 
             
             if FilterIndex(1)~=0
@@ -256,7 +256,7 @@ while run
             [multifiles,PathName,FilterIndex] = uigetfile({'*.wf;*.nse;*.nst;*.ntt;*.spikes;','all base electrode file types';...
                 '*_simpleclust.mat', 'simpleclust file';'*.spikes', 'open ephys file';'*.mat', 'matlab file';...
                 '*_extracted.mat', 'extracted matlab file';'*.wf','Waveform file';'*.nse' ,'neuralynx single electrode file';...
-                '*.nst',  'neuralynx stereotrode file'; '*.ntt',  'neuralynx tetrode file'},['choose files to cluster'],'MultiSelect','on');
+                '*.nst',  'neuralynx stereotrode file'; '*.ntt',  'neuralynx tetrode file'; '*.kwx',  'openephys kwx file'},['choose files to cluster'],'MultiSelect','on');
             
             
             if FilterIndex(1)~=0
@@ -331,7 +331,10 @@ while run
                         PathName = '/home/jvoigts/Dropbox/em003/good/';
                         FileName =  'ST11.nse';
                     else
-                        [FileName,PathName,FilterIndex] = uigetfile({'*.wf;*.nse;*.nst;*.ntt;*.spikes;','all base electrode file types';'*_simpleclust.mat', 'simpleclust file';'*.mat', 'matlab file';'*.wf','Waveform file';'*.nse' ,'neuralynx single electrode file'; '*.nst',  'neuralynx stereotrode file'; '*.ntt',  'neuralynx tetrode file'},'choose input file');
+                        [FileName,PathName,FilterIndex] = uigetfile({'*.wf;*.nse;*.nst;*.ntt;*.spikes;','all base electrode file types';...
+                            '*_simpleclust.mat', 'simpleclust file';'*.mat', 'matlab file';'*.wf','Waveform file';'*.nse' ,...
+                            'neuralynx single electrode file'; '*.nst',  'neuralynx stereotrode file'; ...
+                            '*.ntt',  'neuralynx tetrode file'; '*.kwx',  'openephys kwx file'},'choose input file');
                     end;
                     
                     features.muafile =[PathName,FileName];
@@ -373,7 +376,10 @@ while run
                             FileName =  'ST11.nse';
                         else
                             
-                            [FileName,PathName,FilterIndex] = uigetfile({'*.wf;*.nse;*.nst;*.ntt;*.spikes;','all base electrode file types';'*_simpleclust.mat', 'simpleclust file';'*.mat', 'matlab file';'*.wf','Waveform file';'*.nse' ,'neuralynx single electrode file'; '*.nst',  'neuralynx stereotrode file'; '*.ntt',  'neuralynx tetrode file'},'choose input file');
+                            [FileName,PathName,FilterIndex] = uigetfile({'*.wf;*.nse;*.nst;*.ntt;*.spikes;','all base electrode file types';...
+                                '*_simpleclust.mat', 'simpleclust file';'*.mat', 'matlab file';'*.wf','Waveform file';...
+                                '*.nse' ,'neuralynx single electrode file'; '*.nst',  'neuralynx stereotrode file';...
+                                '*.ntt',  'neuralynx tetrode file'; '*.kwx',  'openephys kwx file'},'choose input file');
                             
                         end;
                         

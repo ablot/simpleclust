@@ -44,10 +44,61 @@ switch muafile_ext
             features.sourcechannel=sourcechannel;
         end;
         
+        
+    case 'kwx' % open ephys kwik format
+                
+        % ask for which tetrode to use
+        prompt = {['source channel nr for file ',muafile], ...
+            'recording number for reading gain'};
+        dlg_title = 'channel nr';
+        num_lines = 1;
+        def = {'', ''};
+        features.chnumstr = inputdlg(prompt,dlg_title,num_lines,def);
+        features.sourcechannel= str2num(features.chnumstr{1});
+        rec = str2num(features.chnumstr{2});
+        sourcechannel=features.sourcechannel; 
+        
+        timestamps = double(h5read(muafile, sprintf('/channel_groups/%i/time_samples', sourcechannel)));
+        data = double(h5read(muafile, sprintf('/channel_groups/%i/waveforms_filtered', sourcechannel)));
+        
+        mua.Nspikes = numel(timestamps);
+        mua.ts = timestamps;
+        [pathstr, name, ext] = fileparts(muafile);
+        mua.fname=[name,ext];
+        
+        
+        mua.header=[];
+        mua.opt=[];
+        mua.ncontacts = size(data,1);
+        
+        % gain does not seem to be in the kwx but only on the kwd file, so
+        % for now assume every channel has the same gain as channel 0 and
+        % that there is always a kwd with a raw recording
+        kwikfile = fullfile(pathstr, strcat(name, '.kwik'));
+        kwd = h5readatt(kwikfile, sprintf('/recordings/%i/raw/hdf5_paths', rec),'0');
+        bits = strread(kwd,'%s','delimiter','/');
+        assert(rec ==str2double(bits{3}))
+        kwdpath = bits{1};
+        gain = h5readatt(fullfile(pathstr, kwdpath),sprintf('/recordings/%i/application_data', rec), 'channel_bit_volts');
+        gain = double(gain(1));
+        
+        mua.val2volt=gain(1); % it's val to microvolt here
+        mua.waveforms=reshape(permute(data, [3 2 1]), size(data,3), size(data,1)*size(data,2),1);
+        
+        % sample rate does not seem to be in the kwx but in the kwik and 
+        % the kwd, there might be multiple sampling rate in some cases and 
+        % it might be recording dependant. I'll just ignore that for now...
+        sample_rate = double(h5readatt(kwikfile, sprintf('/recordings/%i/', rec),'sample_rate'));
+        
+        % I'm assuming that the spike is in the center of the snippet, I
+        % might need to check that
+        mua.ts_spike = ((1:size(data, 2)* mua.ncontacts)-(size(data, 2)/2)) / double(sample_rate);
 
-        
-        
-        
+        if dofeatures
+            features=sc_mua2features(mua,s_opt);
+            features.sourcechannel=sourcechannel;
+        end;
+
     
     case 'mat'
         load(muafile);

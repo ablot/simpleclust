@@ -85,7 +85,7 @@ else % select manually
     
     if strcmp(button,'Yes')
         features.loadmultiple=1;
-        [FileName,PathName,FilterIndex] = uigetfile({'*.wf;*.nse;*.nst;*.ntt;','all base electrode file types';'*_simpleclust.mat', 'simpleclust file';'*.mat', 'matlab file';'*_extracted.mat', 'extracted matlab file';'*.wf','Waveform file';'*.nse' ,'neuralynx single electrode file'; '*.nst',  'neuralynx stereotrode file'; '*.ntt',  'neuralynx tetrode file'},['choose files for other channels (vs ch ',num2str(spikes.sourcechannel),')'],'MultiSelect','on');
+        [FileName,PathName,FilterIndex] = uigetfile({'*.wf;*.nse;*.nst;*.ntt;','all base electrode file types';'*_simpleclust.mat', 'simpleclust file';'*.mat', 'matlab file';'*_extracted.mat', 'extracted matlab file';'*.wf','Waveform file';'*.nse' ,'neuralynx single electrode file'; '*.nst',  'neuralynx stereotrode file'; '*.ntt',  'neuralynx tetrode file'; '*.kwx',  'openephys kwx file'},['choose files for other channels (vs ch ',num2str(spikes.sourcechannel),')'],'MultiSelect','on');
 
         features.otherchannelfiles=FileName;
         
