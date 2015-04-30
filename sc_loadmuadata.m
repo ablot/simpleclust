@@ -49,16 +49,25 @@ switch muafile_ext
                 
         % ask for which tetrode to use
         prompt = {['source channel nr for file ',muafile], ...
-            'recording number for reading gain'};
+            'Recording number for reading sample rate', ...
+            'Gain (leave blank to read from kwd file)'};
         dlg_title = 'channel nr';
         num_lines = 1;
-        def = {'', ''};
+        def = {'0', '0', ''}; % put the default to zero to remind that channel number is zero-based
         features.chnumstr = inputdlg(prompt,dlg_title,num_lines,def);
+        
         features.sourcechannel= str2num(features.chnumstr{1});
         rec = str2num(features.chnumstr{2});
+        gain = features.chnumstr{3};
+
         sourcechannel=features.sourcechannel; 
         
+        % channel indices are 0 based in the kwd file
         timestamps = double(h5read(muafile, sprintf('/channel_groups/%i/time_samples', sourcechannel)));
+        if isempty(timestamps)
+            fprintf('There is not a single spike for that channel in this file...\n')
+        end
+        
         data = double(h5read(muafile, sprintf('/channel_groups/%i/waveforms_filtered', sourcechannel)));
         
         mua.Nspikes = numel(timestamps);
@@ -75,12 +84,17 @@ switch muafile_ext
         % for now assume every channel has the same gain as channel 0 and
         % that there is always a kwd with a raw recording
         kwikfile = fullfile(pathstr, strcat(name, '.kwik'));
-        kwd = h5readatt(kwikfile, sprintf('/recordings/%i/raw/hdf5_paths', rec),'0');
-        bits = strread(kwd,'%s','delimiter','/');
-        assert(rec ==str2double(bits{3}))
-        kwdpath = bits{1};
-        gain = h5readatt(fullfile(pathstr, kwdpath),sprintf('/recordings/%i/application_data', rec), 'channel_bit_volts');
-        gain = double(gain(1));
+        
+        if isempty(gain)
+            kwd = h5readatt(kwikfile, sprintf('/recordings/%i/raw/hdf5_paths', rec),'0');
+            bits = strread(kwd,'%s','delimiter','/');
+            assert(rec ==str2double(bits{3}))
+            kwdpath = bits{1};
+            gain = h5readatt(fullfile(pathstr, kwdpath),sprintf('/recordings/%i/application_data', rec), 'channel_bit_volts');
+            gain = double(gain(1));
+        else
+            gain = str2num(gain);
+        end
         
         mua.val2volt=gain(1); % it's val to microvolt here
         mua.waveforms=reshape(permute(data, [3 2 1]), size(data,3), size(data,1)*size(data,2),1);
